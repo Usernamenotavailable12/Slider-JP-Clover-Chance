@@ -64,8 +64,8 @@
 }
 .numbers__item.numbers__item--jvari {background-image: url("https://images.takeshape.io/5da2b4d5-59f6-412a-82c3-f6a272b532be/dev/fe327db2-5688-4333-b6f2-6fc0b4319b66/Mini_.png?auto=format%2Ccompress");}
 .numbers__item.numbers__item--aguri {background-image: url("https://images.takeshape.io/5da2b4d5-59f6-412a-82c3-f6a272b532be/dev/41c05e1e-cd6e-4b7a-8ecf-3d7c10f64353/Minor.png?auto=format%2Ccompress");margin-right: 10px;}
-.numbers__item.numbers__item--guli {background-image: url("https://images.takeshape.io/5da2b4d5-59f6-412a-82c3-f6a272b532be/dev/d0d3ff90-b65b-4cd5-9155-0943fd782644/Grand.png?auto=format%2Ccompress");}
-.numbers__item.numbers__item--yvavi {background-image: url("https://images.takeshape.io/5da2b4d5-59f6-412a-82c3-f6a272b532be/dev/9f0d3f1d-d7d9-4fa1-acb5-8b6c996cbfd9/Major.png?auto=format%2Ccompress");margin-right: 10px;}
+.numbers__item.numbers__item--yvavi {background-image: url("https://images.takeshape.io/5da2b4d5-59f6-412a-82c3-f6a272b532be/dev/d0d3ff90-b65b-4cd5-9155-0943fd782644/Grand.png?auto=format%2Ccompress"); margin-right: 10px;}
+.numbers__item.numbers__item--guli {background-image: url("https://images.takeshape.io/5da2b4d5-59f6-412a-82c3-f6a272b532be/dev/9f0d3f1d-d7d9-4fa1-acb5-8b6c996cbfd9/Major.png?auto=format%2Ccompress");}
 .container .numbers__item .numbers__item--icon {
     display: flex;
     align-items: center;
@@ -250,31 +250,30 @@ function syncJackpots() {
         intervals.forEach(interval => clearInterval(interval));
         intervals = [];
 
-        // Filter data for "Clover Chance"
-        const instance = data.jackpotInstancesStats.instanceStats.find(instance => instance.instanceName === 'Clover Chance');
+        const instance = data.jackpotInstancesStats.instanceStats.find(stat => stat.instanceName === "Clover Chance");
         const levelStats = instance.levelStats;
 
         if (previousJackpots.length === 0) {
-            previousJackpots = [
-                getCurrentValue(levelStats, 1),
-                getCurrentValue(levelStats, 2),
-                getCurrentValue(levelStats, 3),
-                getCurrentValue(levelStats, 4)
-            ];
-        } else {
-            // Update previousJackpots with the latest data
-            previousJackpots[0] = getCurrentValue(levelStats, 1);
-            previousJackpots[1] = getCurrentValue(levelStats, 2);
-            previousJackpots[2] = getCurrentValue(levelStats, 3);
-            previousJackpots[3] = getCurrentValue(levelStats, 4);
-        }
+                previousJackpots = [
+                    getCurrentValue(levelStats, 4),
+                    getCurrentValue(levelStats, 3),
+                    getCurrentValue(levelStats, 2),
+                    getCurrentValue(levelStats, 1)
+                ];
+            } else {
+                // Update previousJackpots with the latest data
+                previousJackpots[0] = getCurrentValue(levelStats, 4);
+                previousJackpots[1] = getCurrentValue(levelStats, 3);
+                previousJackpots[2] = getCurrentValue(levelStats, 2);
+                previousJackpots[3] = getCurrentValue(levelStats, 1);
+            }
 
-        const currentJackpots = [
-            getCurrentValue(levelStats, 1),
-            getCurrentValue(levelStats, 2),
-            getCurrentValue(levelStats, 3),
-            getCurrentValue(levelStats, 4)
-        ];
+            const currentJackpots = [
+                getCurrentValue(levelStats, 4),
+                getCurrentValue(levelStats, 3),
+                getCurrentValue(levelStats, 2),
+                getCurrentValue(levelStats, 1)
+            ];
         
         const diffs = currentJackpots.map((jackpot, index) => jackpot - previousJackpots[index]);
 
@@ -308,22 +307,23 @@ function createInitialDomElements(wrap, domArr, jackpot, index) {
     wrap[index].innerHTML = '';
     domArr[index] = [];
 
-    const jackpotStr = jackpot.toString();
-
-    for (let numIndex = 0; numIndex < jackpotStr.length; numIndex++) {
+    jackpot.toString().split('').forEach((number, numIndex) => {
         const numDom = document.createElement('div');
-        numDom.innerHTML = parseInt(jackpotStr[numIndex]);
+        numDom.innerHTML = parseInt(number);
         wrap[index].appendChild(numDom);
         domArr[index].push(numDom);
-
-        // Insert comma as thousand separator
-        if ((jackpotStr.length - numIndex - 1) % 3 == 0 && numIndex !== 0 && numIndex !== jackpotStr.length - 1) {
+    
+        if (((jackpot.toString().length - 3) - numIndex) % 3 == 0) {
             const numDomSeparator = document.createElement('div');
-            const separator = (numIndex === jackpotStr.length - 4) ? '.' : ',';
-            numDomSeparator.innerHTML = separator;
+            const separator = jackpot.toString().length - 3 == numIndex ? '.' : ',';
+            for (let i = 0; i < 3; i++) {
+                const a = document.createElement('div');
+                a.innerHTML = separator;
+                numDomSeparator.appendChild(a);
+            }
             wrap[index].appendChild(numDomSeparator);
         }
-    }
+    });
 }
 
 function iterateAndUpdateJackpot(jackpots, index, wrap, domArr) {
@@ -348,6 +348,5 @@ function iterateAndUpdateJackpot(jackpots, index, wrap, domArr) {
         }
     }
 }
-
     </script>
 </html>
