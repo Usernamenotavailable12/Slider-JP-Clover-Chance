@@ -241,7 +241,7 @@ syncJackpots();
 
 setInterval(() => {
     syncJackpots();
-}, TIME_INTERVAL * 1000);
+}, TIME_INTERVAL * 100);
 
 function syncJackpots() {
     fetch(JSON_URI, { cache: 'no-cache' })
